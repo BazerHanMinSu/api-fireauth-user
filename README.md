@@ -1,10 +1,10 @@
-# api-userauth
+# api-fireauthuser
 
-* Github 주소 => [링크](https://github.com/BazerHanMinSu/api-userauth#1-loginid-pw)
+* Github 주소 => [링크](https://github.com/BazerHanMinSu/api-fireauthuser)
 
 =============
 
-회원관리 및 인증에 필요한 기능들을 모아놓은 고객 페이지용 class와 관리자 페이지용 class
+회원관리 및 인증에 필요한 기능들을 모아놓은 고객 페이지용 class
 
 > updated at 2018-7-29
 ***
@@ -19,8 +19,9 @@
 
 ## 1. api 메소드 구성
 
-### (1) UserAuth.js
->일반 및 연동(구글, 페이스북 등) 회원 인증 기능을 가진 class (주로 일반 웹페이지용)
+### FireAuthUser.js
+
+>일반 및 연동(구글, 페이스북 등) 회원 인증 기능을 가진 class 
 + fbLogin
 + googleLogin
 + login
@@ -31,17 +32,6 @@
 + checkId
 + verifyUser
 + resetPw
-
-### (2) AdmAuth.js
->일반 회원 인증 기능을 가진 class (주로 관리자용)
-+ login
-+ register
-+ cancelAccount
-+ reAuth
-+ checkId
-+ resetPw
-+ deleteAdm
-+ updateAdm
 
 
 ## 2. 사용법 및 상세정보
@@ -62,8 +52,7 @@ let config = {
   messagingSenderId: "53964943217"
 };
 
-// admAuth도 동일
-let userAuth = new userAuth(server, appName, config);
+let FireAuthUser = new FireAuthUser(server, appName, config);
 ```
 
 + server 
@@ -89,7 +78,7 @@ async login(id, pw){
   // 정상적으로 fetch한 경우
   if(!res.hasOwnProperty('results')){
     console.log(res);
-    setCookie('admAuth',JSON.stringify(res))
+    setCookie('userAuth',JSON.stringify(res))
     window.location.reload();
   }
   // 에러가 발견된 경우
@@ -131,19 +120,6 @@ let bodyData = {
     user_type : tmp,
   },
   user_auth: {
-    typ_login : tmp,
-    pw        : tmp,
-  },
-}  
-
-// AdmAuth
-let bodyData = {
-  adm: {
-    id        : tmp,
-    user_name : tmp,
-    user_type : tmp,
-  },
-  adm_auth: {
     typ_login : tmp,
     pw        : tmp,
   },
@@ -190,17 +166,19 @@ let bodyData = {
 
 >id : 아이디(이메일)
 
-### 9. resetPw(email)
+### 9. verifyUser(id, pw)
+
+이메일 인증을 위한 메일 전송
+
+>id : 이메일, pw : 비밀번호
+
+### 10. resetPw(email)
 
 비밀번호 재설정 메일 발송
 
 >email : 이메일
 
-### 10. verifyUser(id, pw)
 
-이메일 인증을 위한 메일 전송
-
->id : 이메일, pw : 비밀번호
 
 ***
 
@@ -208,4 +186,4 @@ let bodyData = {
 
 2018-7-25 => 첫 버전 업로드
 2018-7-29 => README 목차 및 (2).4 회원가입 부분 설명 수정
-2018-8-02 => README 수정 및 폴더 생성하여 안에 수정된 js파일과 fetch파일 생성
+2018-8-02 => README 수정 및 수정된 js파일과 utils 생성
