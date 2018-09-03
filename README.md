@@ -4,7 +4,7 @@
 
 * !! Github 주소 => [링크](https://github.com/BazerHanMinSu/api-fireauthuser)
 
-> updated at 2018-8-2
+> updated at 2018-9-3
 
 | 파일명 | 설명 |
 | ------ | ----------- |
@@ -45,6 +45,7 @@
 ### (1). 인스턴스 선언
 
 ```javascript
+import FireAuthUser from '../../common/FireAuthUser';
 
 let server = "http://192.168.0.15:7410";
 let appName = "test_module";
@@ -254,3 +255,5 @@ __(return)__
 2018-7-29 => README 목차 및 (2).4 회원가입 부분 설명 수정
 
 2018-8-02 => README 수정 및 수정된 js파일과 utils 생성
+
+2018-9-3  => README 수정
