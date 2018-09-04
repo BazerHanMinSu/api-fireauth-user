@@ -4,7 +4,7 @@
 
 * !! Github 주소 => [링크](https://github.com/BazerHanMinSu/api-fireauthuser)
 
-> updated at 2018-9-3
+> updated at 2018-9-4
 
 | 파일명 | 설명 |
 | ------ | ----------- |
@@ -74,7 +74,26 @@ api 정보를 가져올 서버의 앱 이름
 
 firebase 설정 객체
 
-### (2). 메소드별 상세정보
+### (2). 사용되는 쿠키 정보
+
+```javascript
+
+  // 로그인 후 유저정보를 쿠키에 담기
+  setCookie('admAuth',JSON.stringify(res))
+
+  // 쿠키정보 불러오기
+  JSON.parse(getCookie('admAuth'))
+
+```
+
++ 내부적으로 로그인 정보를 추출할 쿠키명이 'admAuth'로 지정되어있음
+
++ 따라서 1. 사용자가 로그인 후 받아오는 유저정보 데이터를 위와 같이 'admAuth'인 쿠키명으로 저장하거나
+
++ 혹은 2. FireAuthAdmUtils.js 로 가서 해당 쿠키명을 커스텀하여 사용할 수 있음
+
+
+### (3). 메소드별 상세정보
 
 ```javascript
 // login()을 사용하는 예시
@@ -257,3 +276,5 @@ __(return)__
 2018-8-02 => README 수정 및 수정된 js파일과 utils 생성
 
 2018-9-3  => README 수정
+
+2018-9-4  => FireAuthAdmUtils 수정 및  README 수정
