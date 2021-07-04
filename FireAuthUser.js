@@ -1,22 +1,24 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app'
+import 'firebase/app'
+import 'firebase/auth'
 import {_Fetch, setCookie} from './FireAuthUserUtils';
 
 /**
  * @see 함수목록
- * 
+ *
  * @method fbLogin           => 페이스북 로그인
  * @method googleLogin       => 구글 로그인
  * @method login             => 이메일 로그인
- * 
- * @method signUp            => 회원 가입 
+ *
+ * @method signUp            => 회원 가입
  * @method cancelAccount     => 계정 삭제
  * @method cancelAccountAuth => 계정 삭제
  *
- * @method reAuth            => 개인정보 열람 위한 재인증 
+ * @method reAuth            => 개인정보 열람 위한 재인증
  * @method checkId           => 아이디 중복 확인
  * @method verifyUser        => 이메일 인증
  * @method resetPw           => 비밀번호 재설정
- *  
+ *
  * @method googleAuth        => 구글 인증(로그인, 회원가입, 인증)
  * @method fbAuth            => 페이스북 인증(로그인, 회원가입, 인증)
  */
@@ -24,7 +26,7 @@ import {_Fetch, setCookie} from './FireAuthUserUtils';
 
 class FireAuthUser {
   constructor(server, appName, config){
-        
+
     // firebase 중복 초기화 방지
     if(firebase.apps.length === 0){
       firebase.initializeApp(config);
@@ -33,7 +35,7 @@ class FireAuthUser {
 
     this.getData(server + '/' + appName + '/restapi/auth_desc')
   }
-  
+
   // api 정보 불러오는 함수
   async getData(api_url){
 
@@ -58,7 +60,7 @@ class FireAuthUser {
       this.RESET_PW       = obj ? obj.user_resetpw : null;
       this.AUTH_BY_PW     = obj ? obj.user_check_user : null;
       this.VERIFY_EMAIL   = obj ? obj.user_verify_email : null;
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -96,14 +98,14 @@ class FireAuthUser {
       pw: pw,
       typ_login: 1,
     }
-    
+
     let res = await _Fetch(this.LOGIN_EMAIL, '', body);
 
     if(!res.results){
       setCookie('userData', res)
     }
     return res;
-  } 
+  }
 
 
 
@@ -111,13 +113,13 @@ class FireAuthUser {
   /*************************************************
    * @description 회원가입
    * @property {bodyData} => 회원가입에 쓰이는 body 객체
-   * 
+   *
    * bodyData를 회원가입 요구조건에 맞게 수정하여 사용할 것
    *************************************************/
   async signUp(bodyData) {
 
     // <-------- 연동 로그인 id 중복확인 부분 -------->
-    
+
     // **일반 로그인은 가입창에서 미리 확인하므로 제외
     if(!bodyData.user_auth.hasOwnProperty("typ_login")){
       return('FireAuthUser.signUp()에 필요한 typ_login 데이터가 존재하지않습니다.');
@@ -147,37 +149,37 @@ class FireAuthUser {
 
 
 
-    // 연동 가입은 이메일을 firebase에서 가져옴 
+    // 연동 가입은 이메일을 firebase에서 가져옴
     bodyData.user.id = fireObj.email ? fireObj.email : bodyData.user.id
 
     // ** uid는 일반 로그인은 server에서 얻고
     //          연동 로그인은 위의 중복검사에서 얻음
     bodyData.uid = fireObj.uid ? fireObj.uid : null;
-    
-    let res = fireObj.uid ? await _Fetch(this.REGISTER_OAUTH, '', bodyData) : await _Fetch(this.REGISTER, '', bodyData) 
-    return(res);
-      
-  }
-    
 
-  
+    let res = fireObj.uid ? await _Fetch(this.REGISTER_OAUTH, '', bodyData) : await _Fetch(this.REGISTER, '', bodyData)
+    return(res);
+
+  }
+
+
+
 
 
 
   /*************************************************
    * @description 계정 삭제
    * @property {bodyData} => 유저 삭제에 필요한 bodyData
-   * 
+   *
    * bodyData = {
-      pw       : 
-      uid      : 
-      pid_user : 
+      pw       :
+      uid      :
+      pid_user :
     }
    *************************************************/
   async cancelAccount(bodyData){
-     
+
     let res = await _Fetch(this.DELETE, '', bodyData);
-    
+
     return res;
   }
 
@@ -186,10 +188,10 @@ class FireAuthUser {
   /*************************************************
    * @description 계정 삭제
    * @property {bodyData} => 유저 삭제에 필요한 bodyData
-   * 
+   *
    * bodyData = {
-   *  uid      : 
-   *  pid_user : 
+   *  uid      :
+   *  pid_user :
    * }
    *************************************************/
   async cancelAccountAuth(bodyData){
@@ -206,14 +208,14 @@ class FireAuthUser {
   /*************************************************
    * @description 유저 계정인증
    * @property {id, pw, typ_login} => 유저 id & pw & typ_login
-   * 
+   *
    * 개인정보 수정시 권한을 얻기위한 재인증 과정
    *************************************************/
   async reAuth(id, pw, typ_login){
-    
+
     // 일반 로그인 재인증
     if(typ_login === 1){
-      
+
       let res = await _Fetch(this.AUTH_BY_PW, '?id=' + id + '&&pw=' + pw);
       return res;
 
@@ -238,7 +240,7 @@ class FireAuthUser {
    * @property {id} => 유저 id
    *************************************************/
   async checkId(id){
-    
+
     let res = await _Fetch(this.CHECK_EMAIL, '?id=' + id);
 
     return res;
@@ -287,7 +289,7 @@ class FireAuthUser {
   /*****0********************************************
    * @description 구글 연동 과정
    * @property {key} => 1(로그인) 2(회원가입) 3(계정인증)
-   * 
+   *
    * 구글 연동으로 로그인 , 회원가입, 계정인증에 사용됨
    *************************************************/
 
@@ -297,26 +299,26 @@ class FireAuthUser {
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
     firebase.auth().languageCode = 'kr';
- 
-    await firebase.auth().useDeviceLanguage(); 
+
+    await firebase.auth().useDeviceLanguage();
 
     // provider.setCustomParameters({
     //   'login_hint': 'user@example.com'
     // });
 
     const firebaseRes = await firebase.auth().signInWithPopup(provider);
-  
+
     const user        = await firebaseRes.user
-    
+
     const token       = await firebaseRes.credential.accessToken
-    
+
     const uid         = await firebaseRes.user.uid;
 
     const currentUser = firebaseRes.user.W.currentUser;
 
     // 로그인
     if(key === "login"){
-      
+
       let res = await _Fetch(this.CHECK_EMAIL, '?id=' + user.email)
 
       if(!res.hasOwnProperty('results')){
@@ -335,12 +337,12 @@ class FireAuthUser {
           typ_login: 2,
           uid: uid,
         }
-        let res = await _Fetch(this.LOGIN_OAUTH, '', body); 
-    
+        let res = await _Fetch(this.LOGIN_OAUTH, '', body);
+
         return(res)
       }
     }
-    
+
     // 회원가입
     else if(key === "join"){
       try{
@@ -349,7 +351,7 @@ class FireAuthUser {
       }
       catch(e){
         return null
-      }      
+      }
     }
     // 계정인증
     else if(key === "auth"){
@@ -357,7 +359,7 @@ class FireAuthUser {
         // 아이디가 일치하다면
         if(firebaseRes.user.W.currentUser.email === id){
           this.currentUser = firebaseRes.user.W.currentUser;
-          
+
           resolve('인증 성공');
         }
         else{
@@ -386,7 +388,7 @@ class FireAuthUser {
   /*************************************************
    * @description 페이스북 연동 과정
    * @property {key} => => 1(로그인) 2(회원가입) 3(계정인증)
-   * 
+   *
    * 페이스북 연동으로 로그인 , 회원가입, 계정인증에 사용됨
    *************************************************/
   async fbAuth(key, id) {
@@ -408,7 +410,7 @@ class FireAuthUser {
       firebaseRes = await firebase.auth().signInWithPopup(provider);
 
       user        = await firebaseRes.user;
-      
+
       token       = await firebaseRes.credential.accessToken;
 
       uid         = await firebaseRes.user.uid;
@@ -417,14 +419,14 @@ class FireAuthUser {
     }
     catch(e){
       if(e.code ==="auth/account-exists-with-different-credential"){
-        return(null)  
+        return(null)
       }
       console.log(e);
     }
 
     // 로그인
     if(key === "login"){
-      
+
       let res = await _Fetch(this.CHECK_EMAIL, '?id=' + user.email)
 
       if(!res.hasOwnProperty('results')){
@@ -443,8 +445,8 @@ class FireAuthUser {
           typ_login: 3,
           uid: uid,
         }
-        let res = await _Fetch(this.LOGIN_OAUTH, '', body); 
-    
+        let res = await _Fetch(this.LOGIN_OAUTH, '', body);
+
         return(res)
       }
     }
@@ -456,7 +458,7 @@ class FireAuthUser {
       }
       catch(e){
         return null
-      } 
+      }
     }
     // 계정인증
     else if(key === "auth"){
@@ -464,7 +466,7 @@ class FireAuthUser {
         // 아이디가 일치하다면
         if(firebaseRes.user.W.currentUser.email === id){
           this.currentUser = firebaseRes.user.W.currentUser;
-          
+
           resolve('인증 성공');
         }
         else{
